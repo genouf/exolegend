@@ -1,6 +1,11 @@
 #include "gladiator.h"
-Gladiator* gladiator;
+#include "../libs/header.h"
+
+/*  GLOBAL VAR  */
+Gladiator*  gladiator;
+
 void reset();
+
 void setup() {
     //instanciation de l'objet gladiator
     gladiator = new Gladiator();
@@ -14,12 +19,18 @@ void reset() {
     gladiator->log("Appel de la fonction de reset");
 }
 
-void loop() {
-    if(gladiator->game->isStarted()) { //tester si un match à déjà commencer
-        //code de votre stratégie
-        gladiator->log("Allez les bleus");
-        gladiator->log("Le jeu a commencé");
-    }else {
+void loop()
+{
+    if (gladiator->game->isStarted())
+    {
+        RobotData data = gladiator->robot->getData();
+        gladiator->control->setWheelSpeed(WheelAxis::RIGHT, 0.2);
+        gladiator->log(String(data.position.a).c_str());
+        gladiator->log("Direction : ");
+        gladiator->log(String(findDirection(gladiator)).c_str());
+    } 
+    else 
+    {
         gladiator->log("Le jeu n'a pas encore commencé");
     }
     delay(300);
