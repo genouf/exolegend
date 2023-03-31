@@ -1,14 +1,14 @@
 #include "gladiator.h"
-#include "../libs/header.h"
+#include "OurGladiator.h"
 
 /*  GLOBAL VAR  */
-Gladiator*  gladiator;
+OurGladiator*  gladiator;
 
 void reset();
 
 void setup() {
     //instanciation de l'objet gladiator
-    gladiator = new Gladiator();
+    gladiator = new OurGladiator();
     //enregistrement de la fonction de reset qui s'éxecute à chaque fois avant qu'une partie commence
     gladiator->game->onReset(&reset);
 }
@@ -23,15 +23,14 @@ void loop()
 {
     if (gladiator->game->isStarted())
     {
-        RobotData data = gladiator->robot->getData();
-        gladiator->control->setWheelSpeed(WheelAxis::RIGHT, 0.2);
-        gladiator->log(String(data.position.a).c_str());
-        gladiator->log("Direction : ");
-        gladiator->log(String(findDirection(gladiator)).c_str());
+        gladiator->log(("Radius" + String(gladiator->robot->getRobotRadius())).c_str());
+        gladiator->forward(1);
+        gladiator->rotate(PI / 2);
     } 
     else 
     {
         gladiator->log("Le jeu n'a pas encore commencé");
     }
+    gladiator->log("Loopé");
     delay(300);
 }
