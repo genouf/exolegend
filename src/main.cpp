@@ -1,4 +1,3 @@
-#include "gladiator.h"
 #include "OurGladiator.h"
 
 /*  GLOBAL VAR  */
@@ -21,16 +20,18 @@ void reset() {
 
 void loop()
 {
+    //Position position;
+    //static int temp;
     if (gladiator->game->isStarted())
     {
-        gladiator->log(("Radius" + String(gladiator->robot->getRobotRadius())).c_str());
-        gladiator->forward(1);
-        gladiator->rotate(PI / 2);
-    } 
-    else 
+        // Position nextPosition = findCenter(findNextSquare(gladiator, findDirection(gladiator)));
+        Position pos = gladiator->nextPosition();
+        gladiator->moveTo(pos.x, pos.y);
+    }
+    else
     {
         gladiator->log("Le jeu n'a pas encore commencé");
+    //    temp = 0;
     }
-    gladiator->log("Loopé");
-    delay(300);
+    delay(100);
 }
