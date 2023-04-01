@@ -30,6 +30,8 @@ public:
     Vect2 getNextSquare();
     MazeSquare* getJewelNext(MazeSquare *allSquare[4]);
     MazeSquare* getJewelFrontMe(MazeSquare *allSquare[4]);
+    MazeSquare* getJewelBackMe(MazeSquare *allSquare[4]);
+
     MazeSquare* getNearestJewelInDirection(MazeSquare *allSquare[4]);
     Vect2 moveToCenter(MazeSquare current);
     Vect2 getBestCaseRecenter(t_coord major, t_coord minor1, t_coord minor2);
