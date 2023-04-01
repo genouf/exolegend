@@ -60,18 +60,18 @@ inline bool aim(Gladiator* gladiator, const Vector2& target, bool showLogs)
     return targetReached;
 }
 
+void reset() {
+    isStarted = false;
+}
+
 void setup() {
     gladiator = new OurGladiator();
     gladiator->game->onReset(&reset);
 }
 
-void reset() {
-    isStarted = false;
-}
 
 void loop() {
     static Vector2 target;
-    static int i;
 
     if (gladiator->game->isStarted())
     {
@@ -81,13 +81,13 @@ void loop() {
         if (isStarted == false)
         {
             gettimeofday(&start_time, NULL);
+            init_target(target, gladiator);
             isStarted = true;
         }
-        detectOutside(gladiator, start_time);
-        if (i == 0) {
-           init_target(target, gladiator);
-           i++;
-        }
+        if (detectOutside(gladiator, start_time))
+            init_target(target, gladiator);
+
+
         if (aim(gladiator, {target.x(), target.y()}, 0))
         {
            gladiator->log("target atteinte !");

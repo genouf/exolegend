@@ -65,6 +65,6 @@ bool	    checkWall(OurGladiator* gladiator, int direction);
 Position	findCenter(MazeSquare* square);
 MazeSquare* findNextSquare(OurGladiator* gladiator, int direction);
 
-void	detectOutside(Gladiator *gladiator, struct timeval start_time);
+bool	detectOutside(Gladiator *gladiator, struct timeval start_time);
 
 #endif /* OURGLADIATOR_H */
