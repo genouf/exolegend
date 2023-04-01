@@ -6,6 +6,22 @@
 
 #include "gladiator.h"
 
+struct Vect2
+{
+    float x;
+    float y;
+
+    Vect2 operator+(const Vect2& other)
+    {
+        return ((Vect2){x + other.x, y + other.y});
+    }  
+
+    Vect2 operator-(const Vect2& other)
+    {
+        return ((Vect2){x - other.x, y - other.y});
+    }
+};
+
 class OurGladiator: public Gladiator
 {
 public:
@@ -25,13 +41,21 @@ public:
     Position getPosition(void);
     Position nextPosition(void);
     int getWest(MazeSquare current);
+    MazeSquare* getNextSquare(MazeSquare current);
+    void get_square_rotater(MazeSquare current, MazeSquare *allSquare[4]);
+    Position runToCenter();
+    MazeSquare *getForwardCase();
+    MazeSquare *getBackwardCase();
+    bool   isOutsideMap();
 
     /*  NEW */
     void newFoward(float distance);
 
     void moveTo(float x, float y);
+    void moveTo(Vect2 position);
 
 protected:
+    Vect2 currentSpeed;
     float _speed;
     float _omega;
 };
