@@ -4,16 +4,21 @@
 
 #include <sys/time.h>
 
-bool	detectOutside(Warrior *gladiator, struct timeval start_time)
+bool	detectOutside(Warrior *gladiator, unsigned long start_time)
 {
-    struct timeval  end_time;
-	int				i = gladiator->maze->getNearestSquare().i;
-	int				j = gladiator->maze->getNearestSquare().j;
+    unsigned long  end_time;
+    MazeSquare      near = gladiator->maze->getNearestSquare();
+	int				i = near.i;
+	int				j = near.j;
 
-	gettimeofday(&end_time, NULL);
-    double 			time_elapsed = double(end_time.tv_sec - start_time.tv_sec) + double(end_time.tv_usec - start_time.tv_usec) / 1000000;
-	int             restricted = (int)((time_elapsed + 1.5f) / 20.0f);
-	// gladiator->log("restricted : %d, i : %d, j : %d", restricted, i, j);
+	end_time = millis();
+    float 			time_elapsed = (end_time - start_time) / 1000;
+	int             restricted = (int)((int)(time_elapsed + 1) / 20);
+    gladiator->log("time el + 1: %f", time_elapsed + 1);
+    gladiator->log("int timeelapsed + 1: %d", (int)(time_elapsed + 1));
+    gladiator->log("int tt/20: %d", (int)(time_elapsed + 1) / 20);
+    gladiator->log("total: %d", (int)((int)(time_elapsed + 1) / 20));
+	gladiator->log("restricted : %d, i : %d, j : %d", restricted, i, j);
 	if ((i < restricted ) || (j < restricted) || (i > 13 - restricted) || (j > 13 - restricted))
 		return (true);
 	return (false);

@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "Warrior.hpp"
 #include <sys/time.h>
+#include <Arduino.h>
 
 Warrior* gladiator;
 bool isStarted = false;
@@ -40,10 +41,12 @@ void loop() {
 
     if (gladiator->game->isStarted())
     {
-        struct timeval start_time;
+        unsigned long start_time;
+//        struct timeval start_time;
         if (state == State::INIT)
         {
-            gettimeofday(&start_time, NULL);
+            start_time = millis();
+            //          gettimeofday(&start_time, NULL);
             init_target(target, gladiator);
             state = State::SEARCH;
         }
@@ -66,7 +69,7 @@ void loop() {
             //do something else
         }
         //display state
-        gladiator->log("State: %d", (int)state);
+//        gladiator->log("State: %d", (int)state);
     }
     delay(4); // boucle à 250Hz
 }
