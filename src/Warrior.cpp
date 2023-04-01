@@ -16,6 +16,22 @@ static inline float norm2(float x, float y)
     return (x * x + y * y);
 }
 
+
+void Warrior::setNearestSquare(void)
+{
+    Position pos = this->robot->getData().position;
+	MazeSquare current = this->maze->getSquare(setIndexFromPosition(pos.x), setIndexFromPosition(pos.y));
+   
+//    return (this->maze->getNearestSquare())
+    nearest = current;
+}
+
+
+MazeSquare Warrior::getNearestSquare(void)
+{
+    return (this->nearest);
+}
+
 Warrior::Warrior(): Gladiator() {
     this->reset();
 }

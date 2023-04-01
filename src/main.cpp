@@ -42,6 +42,7 @@ void loop() {
     if (gladiator->game->isStarted())
     {
         unsigned long start_time;
+        gladiator->setNearestSquare();
 //        struct timeval start_time;
         if (state == State::INIT)
         {
@@ -53,7 +54,7 @@ void loop() {
         }
         if (detectOutside(gladiator, start_time))
         {
-            targetMiddle(target, gladiator);
+            targetMiddle(target);
             state = State::GOINSIDE;
         }
         if (state == State::GOINSIDE && !detectOutside(gladiator, start_time))
