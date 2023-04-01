@@ -18,24 +18,20 @@ void reset() {
 
 void loop()
 {
-    //Position position;
-    //static int temp;
-    if (gladiator->game->isStarted() && !isStarted)
+    if (gladiator->game->isStarted())
     {
-        isStarted = true;
-        // Position pos = gladiator->nextPosition();
-        // gladiator->log("Position x: %f, y: %f", pos.x, pos.y);
-        // gladiator->moveTo(pos.x, pos.y);
-        gladiator->newFoward(0.214);
-        delay(1000);
-        gladiator->newFoward(0.214);
-        delay(1000);
-        gladiator->newFoward(0.214);
+        struct timeval  start_time;
+
+        if (isStarted == false)
+        {
+            gettimeofday(&start_time, NULL);
+            isStarted = true;
+        }
+        detectOutside(gladiator, start_time);
     }
     else
     {
         gladiator->log("Le jeu n'a pas encore commencé");
-    //    temp = 0;
     }
-    delay(100);
+    delay(200);
 }
