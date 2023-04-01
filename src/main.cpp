@@ -7,8 +7,6 @@
 #include <Arduino.h>
 
 Warrior* gladiator;
-bool isStarted = false;
-bool inside = true;
 
 enum class State {
     INIT,
@@ -22,8 +20,6 @@ State state;
 
 void reset() {
     gladiator->reset();
-    isStarted = false;
-    inside = true;
     state = State::INIT;
 }
 
@@ -35,20 +31,21 @@ void setup() {
 }
 
 
+unsigned long start_time;
+
 void loop() {
     static Vect2  target;
     int status;
 
     if (gladiator->game->isStarted())
     {
-        unsigned long start_time;
         gladiator->setNearestSquare();
 //        struct timeval start_time;
         if (state == State::INIT)
         {
+            setTarget(target, 0, 7);
             // init_target(target, gladiator);
             start_time = millis();
-            setTarget(target, 0, 7);
             //          gettimeofday(&start_time, NULL);
             state = State::SEARCH;
         }

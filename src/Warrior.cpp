@@ -38,10 +38,8 @@ Warrior::Warrior(): Gladiator() {
 
 void Warrior::reset(void)
 {
-    this->speed = 0;
-    this->theta = 0;
-    this->direction = 1;
     this->stop();
+    this->direction = 1;
 }
 
 bool Warrior::aim(float x, float y)
