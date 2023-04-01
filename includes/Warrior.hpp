@@ -49,7 +49,7 @@ private:
     static constexpr float AMORTIZE = 0.1f;
     static constexpr float MAX_SPEED = 0.30f;
     static constexpr float MAX_SPEED2 = MAX_SPEED * MAX_SPEED;
-    static constexpr float THRESH = 0.05f;
+    static constexpr float THRESH = 0.03f;
     static constexpr float THRESH2 = THRESH * THRESH;
 };
 #endif /* WARRIOR_H */

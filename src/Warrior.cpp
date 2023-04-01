@@ -53,9 +53,11 @@ bool Warrior::aim(float x, float y)
         this->theta = angle0;
     }
 
-    if ((angle > PI * 0.71 || angle < -PI * 0.71))
+    if (abs(angle) > PI * 0.51)
     {
-        direction *= -1;
+        this->direction *= -1;
+        this->log("new direction: %.0f angle: %f", this->direction, angle);
+        this->speed *= -0.9;
         return (false);
     }
     if (abs(angle) > 0.1)
@@ -66,7 +68,7 @@ bool Warrior::aim(float x, float y)
         this->speed = 0;
         if (angle < 0)
             delta *= -1;
-        this->setSpeed(-delta * direction, delta * direction);
+        this->setSpeed(-delta, delta);
         return false;
     }
     if (this->speed * this->speed < Warrior::MAX_SPEED2)
@@ -76,7 +78,7 @@ bool Warrior::aim(float x, float y)
     float s = this->speed + Warrior::AMORTIZE * sqrtf(norm2(this->ghostX - current.x, this->ghostY - current.y));
     this->updateGhost(x, y);
     delta = 0.1;
-    if (angle * direction < 0)
+    if (angle < 0)
         delta *= -1;
     this->setSpeed((s - delta), (s + delta));
     return false;
