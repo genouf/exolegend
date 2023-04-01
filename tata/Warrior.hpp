@@ -18,8 +18,8 @@ public:
 
 private:
 
-    float speed;
-    float theta;
+    float speedX;
+    float speedY;
 
     float ghostX;
     float ghostY;

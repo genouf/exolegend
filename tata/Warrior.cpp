@@ -44,11 +44,18 @@ bool Warrior::aim(float x, float y)
     }
 
     float angle0 = std::atan2(y - current.y, x - current.x);
+    this->theta = angle0;
     float angle = angle0;
-
     angle -= current.a;
     angle = mod2PI(angle);
     this->log("angle: %f", angle);
+    if ((abs(angle) > PI * 0.5 && direction > 0) ||
+        (abs(angle) < PI * 0.5 && direction < 0))
+    {
+        direction *= -1;
+        speed *= 0.9;
+        return (false);
+    }
     if (abs(angle) > 0.1)
     {
         delta = 0.05;
@@ -61,18 +68,16 @@ bool Warrior::aim(float x, float y)
         this->setSpeed(-delta, delta);
         return false;
     }
-    if (norm2(this->speedX, this->speedY) < Warrior::MAX_SPEED2)
+    if (this->speed * this->speed < Warrior::MAX_SPEED2)
     {
-        this->speedX += 0.1 * std::cos(angle0) * Warrior::MAX_SPEED;
-        this->speedY += 0.1 * std::sin(angle0) * Warrior::MAX_SPEED;
+        this->speed += 0.1 * Warrior::MAX_SPEED * this->direction;
     }
-    float sx = this->speedX + Warrior::AMORTIZE * (this->ghostX - current.x);
-    float sy = this->speedY + Warrior::AMORTIZE * (this->ghostY - current.y);
+    float s = this->speed + Warrior::AMORTIZE * sqrtf(this->ghostX - current.x, this->ghostY - current.y);
     this->updateGhost(x, y);
     delta = 0.1;
-    if (angle < 0)
+    if (angle * direction < 0)
         delta *= -1;
-    this->setSpeed(sqrtf(sx * sx + sy * sy) - delta, sqrtf(sx * sx + sy * sy) + delta);
+    this->setSpeed(direction * sqrtf(sx * sx + sy * sy) - delta, direction * sqrtf(sx * sx + sy * sy) + delta);
     return false;
 }
 
@@ -80,14 +85,14 @@ void Warrior::updateGhost(float x, float y)
 {
     if (norm2(ghostX - x, ghostY - y) < Warrior::THRESH2)
         return ;
-    ghostX += 0.001 * Warrior::DELAY * speedX;
-    ghostY += 0.001 * Warrior::DELAY * speedY;
+    ghostX += 0.001 * Warrior::DELAY * speed * cos(this->theta) * direction;
+    ghostY += 0.001 * Warrior::DELAY * speedY * sin(this->theta) * direction;
 }
 
 void Warrior::setSpeed(float left, float right)
 {
-    this->control->setWheelSpeed(WheelAxis::LEFT, left);
-    this->control->setWheelSpeed(WheelAxis::RIGHT, right);
+    this->control->setWheelSpeed(WheelAxis::LEFT, left, true);
+    this->control->setWheelSpeed(WheelAxis::RIGHT, right, true);
 }
 
 void Warrior::stop()

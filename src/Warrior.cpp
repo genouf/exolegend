@@ -20,8 +20,8 @@ Warrior::Warrior(): Gladiator() {
 
 void Warrior::reset(void)
 {
-    this->speedX = 0;
-    this->speedY = 0;
+    this->speed = 0;
+    this->theta = 0;
     this->direction = 1;
     this->stop();
 }
@@ -29,13 +29,9 @@ void Warrior::reset(void)
 bool Warrior::aim(float x, float y)
 {
     Position current = this->robot->getData().position;
+    if (direction < 0)
+        current.a = mod2PI(current.a + PI);
     float delta = 0.05;
-
-    if (ghostX == -1)
-    {
-        ghostX = current.x;
-        ghostY = current.y;
-    }
 
     if (norm2(x - current.x, y - current.y) < Warrior::THRESH2)
     {
@@ -45,34 +41,42 @@ bool Warrior::aim(float x, float y)
 
     float angle0 = std::atan2(y - current.y, x - current.x);
     float angle = angle0;
-
     angle -= current.a;
     angle = mod2PI(angle);
-    this->log("angle: %f", angle);
+
+    if (ghostX == -1)
+    {
+        ghostX = current.x;
+        ghostY = current.y;
+        this->theta = angle0;
+    }
+
+    if ((angle > PI * 0.71 || angle < -PI * 0.71))
+    {
+        direction *= -1;
+        return (false);
+    }
     if (abs(angle) > 0.1)
     {
         delta = 0.05;
         if (abs(angle) > 0.4)
             delta = 0.2;
-        this->speedX = 0;
-        this->speedY = 0;
+        this->speed = 0;
         if (angle < 0)
             delta *= -1;
-        this->setSpeed(-delta, delta);
+        this->setSpeed(-delta * direction, delta * direction);
         return false;
     }
-    if (norm2(this->speedX, this->speedY) < Warrior::MAX_SPEED2)
+    if (this->speed * this->speed < Warrior::MAX_SPEED2)
     {
-        this->speedX += 0.1 * std::cos(angle0) * Warrior::MAX_SPEED;
-        this->speedY += 0.1 * std::sin(angle0) * Warrior::MAX_SPEED;
+        this->speed += 0.1 * Warrior::MAX_SPEED * this->direction;
     }
-    float sx = this->speedX + Warrior::AMORTIZE * (this->ghostX - current.x);
-    float sy = this->speedY + Warrior::AMORTIZE * (this->ghostY - current.y);
+    float s = this->speed + Warrior::AMORTIZE * sqrtf(norm2(this->ghostX - current.x, this->ghostY - current.y));
     this->updateGhost(x, y);
     delta = 0.1;
-    if (angle < 0)
+    if (angle * direction < 0)
         delta *= -1;
-    this->setSpeed(sqrtf(sx * sx + sy * sy) - delta, sqrtf(sx * sx + sy * sy) + delta);
+    this->setSpeed((s - delta), (s + delta));
     return false;
 }
 
@@ -80,20 +84,20 @@ void Warrior::updateGhost(float x, float y)
 {
     if (norm2(ghostX - x, ghostY - y) < Warrior::THRESH2)
         return ;
-    ghostX += 0.001 * Warrior::DELAY * speedX;
-    ghostY += 0.001 * Warrior::DELAY * speedY;
+    ghostX += 0.001 * Warrior::DELAY * abs(speed) * cos(this->theta);
+    ghostY += 0.001 * Warrior::DELAY * abs(speed) * sin(this->theta);
 }
 
 void Warrior::setSpeed(float left, float right)
 {
-    this->control->setWheelSpeed(WheelAxis::LEFT, left);
-    this->control->setWheelSpeed(WheelAxis::RIGHT, right);
+    this->control->setWheelSpeed(WheelAxis::LEFT, left, true);
+    this->control->setWheelSpeed(WheelAxis::RIGHT, right, true);
 }
 
 void Warrior::stop()
 {
-    this->speedX = 0;
-    this->speedY = 0;
+    this->speed = 0;
+    this->theta = 0;
     this->ghostX = -1;
     this->ghostY = -1;
     this->setSpeed(0, 0);
