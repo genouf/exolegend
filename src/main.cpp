@@ -1,70 +1,29 @@
-#include "gladiator.h"
 #include <cmath>
 #undef abs
 #include "vector2.h"
 #include "utils.h"
 #include "Warrior.hpp"
-#include "OurGladiator.h"
+#include <sys/time.h>
 
 Warrior* gladiator;
 bool isStarted = false;
 bool inside = true;
 
+enum class State {
+    INIT,
+    SEARCH,
+    KILL,
+    RUN,
+    GOINSIDE,
+};
+
+State state;
+
 void reset() {
     gladiator->reset();
     isStarted = false;
     inside = true;
-}
-
-inline float moduloPi(float a) // return angle in [-pi; pi]
-{
-    return (a < 0.0) ? (std::fmod(a - M_PI, 2*M_PI) + M_PI) : (std::fmod(a + M_PI, 2*M_PI) - M_PI);
-}
-
-inline bool aim(Gladiator* gladiator, const Vector2& target, bool showLogs)
-{
-    constexpr float ANGLE_REACHED_THRESHOLD = 0.1;
-    constexpr float POS_REACHED_THRESHOLD = 0.05;
-
-    auto posRaw = gladiator->robot->getData().position;
-    Vector2 pos{posRaw.x, posRaw.y};
-
-    Vector2 posError = target - pos;
-
-    float targetAngle = posError.angle();
-    float angleError = moduloPi(targetAngle - posRaw.a);
-
-    bool targetReached = false;
-    float leftCommand = 0.f;
-    float rightCommand = 0.f;
-
-    if (posError.norm2() < POS_REACHED_THRESHOLD) //
-    {
-        targetReached = true;
-    }
-    else if (std::abs(angleError) > ANGLE_REACHED_THRESHOLD)
-    {
-        float factor = 0.2;
-        if (angleError < 0)
-            factor = - factor;
-        rightCommand = factor;
-        leftCommand = -factor;
-    }
-    else {
-        float factor = 0.5;
-        rightCommand = factor;//+angleError*0.1  => terme optionel, "pseudo correction angulaire";
-        leftCommand = factor;//-angleError*0.1   => terme optionel, "pseudo correction angulaire";
-    }
-
-    gladiator->control->setWheelSpeed(WheelAxis::LEFT, leftCommand);
-    gladiator->control->setWheelSpeed(WheelAxis::RIGHT, rightCommand);
-
-    // if (showLogs || targetReached)
-    // {
-    //     gladiator->log("ta %f, ca %f, ea %f, tx %f cx %f ex %f ty %f cy %f ey %f", targetAngle, posRaw.a, angleError, target.x(), pos.x(), posError.x(), target.y(), pos.y(), posError.y());
-    // }
-
-    return targetReached;
+    state = State::INIT;
 }
 
 void setup() {
@@ -76,33 +35,38 @@ void setup() {
 
 
 void loop() {
-    static Vector2          target;
+    static Vect2  target;
+    int status;
 
     if (gladiator->game->isStarted())
     {
         struct timeval start_time;
-        if (isStarted == false)
+        if (state == State::INIT)
         {
             gettimeofday(&start_time, NULL);
             init_target(target, gladiator);
-            inside = true;
-            isStarted = true;
+            state = State::SEARCH;
         }
         if (detectOutside(gladiator, start_time))
         {
-            init_target(target, gladiator);
-            inside = false;
+            targetMiddle(target, gladiator);
+            state = State::GOINSIDE;
         }
-        if (inside == false && !detectOutside(gladiator, start_time))
+        if (state == State::GOINSIDE && !detectOutside(gladiator, start_time))
         {
-            inside = true;
-            onEstLa(target, gladiator);
+            targetCenterNearest(target, gladiator);
+            state = State::SEARCH;
         }
-        if (gladiator->aim(target.x(), target.y()) && inside)
-        {
-            // gladiator->log("target atteinte !");
+
+        status = gladiator->aim(target.x(), target.y()) ;
+        if (status && state == State::SEARCH)
             update_target(target, gladiator);
+        else if (status && state == State::GOINSIDE)
+        {
+            //do something else
         }
+        //display state
+        gladiator->log("State: %d", (int)state);
     }
-    delay(4); // boucle à 100Hz
+    delay(4); // boucle à 250Hz
 }

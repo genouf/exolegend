@@ -2,6 +2,7 @@
 #define WARRIOR_H
 
 #include "gladiator.h"
+#include "vector2.h"
 
 class Warrior: public Gladiator
 {
@@ -15,6 +16,12 @@ public:
     void stop(void);
     bool aim(float x, float y);
     void updateGhost(float x, float y);
+
+    /* Algorithm */
+    int	findDirection(void);
+    void get_square_rotater(MazeSquare current, MazeSquare *allSquare[4]);
+    Vect2 getNextSquare();
+
 
 private:
 

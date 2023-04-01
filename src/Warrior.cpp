@@ -1,4 +1,6 @@
 #include "Warrior.hpp"
+#include "vector2.h"
+#include "utils.h"
 
 static inline float mod2PI(float theta)
 {
@@ -101,4 +103,82 @@ void Warrior::stop()
     this->ghostX = -1;
     this->ghostY = -1;
     this->setSpeed(0, 0);
+}
+
+int	Warrior::findDirection(void)
+{
+	float	radius = this->robot->getData().position.a;
+
+	if (radius < 3.f*PI/4.f && radius > PI/4.f) //North
+		return (1);
+	else if (radius < PI/4.f && radius > -PI/4.f) //East
+		return (2);
+	else if (radius < -PI/4.f && radius > -3*PI/4.f) //South
+		return (3);
+	else //West
+		return (4);
+}
+
+void Warrior::get_square_rotater(MazeSquare current, MazeSquare *allSquare[4])
+{
+    int facing = this->findDirection();
+    switch (facing)
+    {
+        case 1:
+            allSquare[0] = current.northSquare;
+            allSquare[1] = current.eastSquare;
+            allSquare[2] = current.southSquare;
+            allSquare[3] = current.westSquare;
+            break;
+        case 2:
+            allSquare[0] = current.eastSquare;
+            allSquare[1] = current.southSquare;
+            allSquare[2] = current.westSquare;
+            allSquare[3] = current.northSquare;
+            break;
+        case 3:
+            allSquare[0] = current.southSquare;
+            allSquare[1] = current.westSquare;
+            allSquare[2] = current.northSquare;
+            allSquare[3] = current.eastSquare;
+            break;
+        case 4:
+            allSquare[0] = current.westSquare;
+            allSquare[1] = current.northSquare;
+            allSquare[2] = current.eastSquare;
+            allSquare[3] = current.southSquare;
+            break;
+        default:
+            break;
+    }
+}
+
+Vect2 Warrior::getNextSquare()
+{
+	//MazeSquare current = this->maze->getNearestSquare();
+    Position pos = this->robot->getData().position;
+	MazeSquare current = this->maze->getSquare(setIndexFromPosition(pos.x), setIndexFromPosition(pos.y));
+    MazeSquare* next = NULL;
+	MazeSquare* allSquare[4]; /* North, East, South, West */
+	this->get_square_rotater(current, allSquare);
+	
+	if (allSquare[3] && allSquare[3]->coin.value != 0)
+		next = allSquare[3];
+	else if (allSquare[0] && allSquare[0]->coin.value != 0)
+		next = allSquare[0];
+	else if (allSquare[1] && allSquare[1]->coin.value != 0)
+		next = allSquare[1];
+	else if (allSquare[2] && allSquare[2]->coin.value != 0)
+		next = allSquare[2];
+	else if (allSquare[3])
+		next = allSquare[3];
+	else if (allSquare[0])
+		next = allSquare[0];
+	else if (allSquare[1])
+		next = allSquare[1];
+	else if (allSquare[2])
+		next = allSquare[2];
+	else
+		next = current.eastSquare;
+	return ((Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)});
 }

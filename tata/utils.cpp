@@ -56,7 +56,7 @@ void get_square_rotater(MazeSquare current, MazeSquare *allSquare[4],Gladiator *
     }
 }
 
-Vector2 getNextSquare(Gladiator *gladiator)
+Vect2 getNextSquare(Gladiator *gladiator)
 {
 	MazeSquare current = gladiator->maze->getNearestSquare();
 	MazeSquare* next = NULL;
@@ -81,11 +81,11 @@ Vector2 getNextSquare(Gladiator *gladiator)
 		next = allSquare[2];
 	else
 		next = current.eastSquare;
-	return ((Vector2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)});
+	return ((Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)});
 }
 
 /* Target */
-void	init_target(Vector2 &target, Gladiator *gladiator)
+void	init_target(Vect2 &target, Gladiator *gladiator)
 {
 	Position pos = gladiator->robot->getData().position;
 
@@ -102,11 +102,11 @@ void	init_target(Vector2 &target, Gladiator *gladiator)
 	}
 }
 
-void	update_target(Vector2 &target, Gladiator *gladiator)
+void	update_target(Vect2 &target, Gladiator *gladiator)
 {
 	static int i = 0;
 
-	Vector2 pos = getNextSquare(gladiator);
+	Vect2 pos = getNextSquare(gladiator);
 	gladiator->log("Target: %f, %f", pos.x(), pos.y());
 	target.set_x(pos.x());
 	target.set_y(pos.y());
