@@ -44,7 +44,8 @@ void loop() {
         if (state == State::INIT)
         {
             gettimeofday(&start_time, NULL);
-            init_target(target, gladiator);
+            // init_target(target, gladiator);
+            setTarget(target, 0, 7);
             state = State::SEARCH;
         }
         if (detectOutside(gladiator, start_time))
@@ -60,13 +61,16 @@ void loop() {
 
         status = gladiator->aim(target.x(), target.y()) ;
         if (status && state == State::SEARCH)
+        {
             update_target(target, gladiator);
+            gladiator->log("TargetReach: NewTarget: %f, %f", target.x(), target.y());
+        }
         else if (status && state == State::GOINSIDE)
         {
             //do something else
         }
         //display state
-        gladiator->log("State: %d", (int)state);
+        // gladiator->log("State: %d", (int)state);
     }
     delay(4); // boucle à 250Hz
 }

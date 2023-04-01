@@ -40,7 +40,6 @@ void	update_target(Vect2 &target, Warrior *gladiator)
 	static int i = 0;
 
 	Vect2 pos = gladiator->getNextSquare();
-	gladiator->log("Target: %f, %f", pos.x(), pos.y());
 	target.set_x(pos.x());
 	target.set_y(pos.y());
 	i++;
@@ -50,4 +49,10 @@ void targetCenterNearest(Vect2& target, Warrior *gladiator)
 {
 	target.set_x(setPositionFromIndex(gladiator->maze->getNearestSquare().i));
 	target.set_y(setPositionFromIndex(gladiator->maze->getNearestSquare().j));
+}
+
+void 	setTarget(Vect2& target, float x, float y)
+{
+	target.set_x(setPositionFromIndex(x));
+	target.set_y((setPositionFromIndex(y)));
 }

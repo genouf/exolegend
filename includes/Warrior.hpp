@@ -4,6 +4,13 @@
 #include "gladiator.h"
 #include "vector2.h"
 
+typedef struct s_coord
+{
+    int x;
+    int y;
+} t_coord;
+
+
 class Warrior: public Gladiator
 {
 public:
@@ -21,6 +28,11 @@ public:
     int	findDirection(void);
     void get_square_rotater(MazeSquare current, MazeSquare *allSquare[4]);
     Vect2 getNextSquare();
+    MazeSquare* getJewelNext(MazeSquare *allSquare[4]);
+    MazeSquare* getJewelFrontMe(MazeSquare *allSquare[4]);
+    MazeSquare* getNearestJewelInDirection(MazeSquare *allSquare[4]);
+    Vect2 moveToCenter(MazeSquare current);
+    Vect2 getBestCaseRecenter(t_coord major, t_coord minor1, t_coord minor2);
 
 
 private:
