@@ -23,6 +23,9 @@ public:
     Position nextPosition(void);
     int getWest(MazeSquare current);
 
+    /*  NEW */
+    void newFoward(float distance);
+
     void moveTo(float x, float y);
 
 protected:

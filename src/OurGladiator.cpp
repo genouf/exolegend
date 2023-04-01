@@ -37,9 +37,9 @@ void OurGladiator::rotate(float angle) {
        delay(5);
     }
     if (angle > 0)
-        this->setSpeed(-this->_speed * 0.05, this->_speed * 0.05);
+        this->setSpeed(-this->_speed * 0.1, this->_speed * 0.1);
     else
-        this->setSpeed(this->_speed * 0.05, -this->_speed * 0.05);
+        this->setSpeed(this->_speed * 0.1, -this->_speed * 0.1);
     while (abs(this->robot->getData().position.a - target_angle) > 0.1)
         delay(5);
     this->stop();
@@ -161,7 +161,7 @@ void OurGladiator::moveTo(float x, float y)
             angle += 2 * PI;
         this->rotate(angle);
         this->setSpeed(0.3, 0.3);
-        while (distance2(x - this->robot->getData().position.x, y - this->robot->getData().position.y) > 0.001)
+        while (distance2(x - this->robot->getData().position.x, y - this->robot->getData().position.y) > 0.002)
             delay(5);
     }
     this->stop();

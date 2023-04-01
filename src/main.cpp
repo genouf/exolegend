@@ -2,20 +2,17 @@
 
 /*  GLOBAL VAR  */
 OurGladiator*  gladiator;
-// bool           isStarted = false;
+bool           isStarted = false;
 
 void reset();
 
 void setup() {
-    //instanciation de l'objet gladiator
     gladiator = new OurGladiator();
-    //enregistrement de la fonction de reset qui s'éxecute à chaque fois avant qu'une partie commence
     gladiator->game->onReset(&reset);
 }
 
 void reset() {
-    //fonction de reset:
-    //initialisation de toutes vos variables avant le début d'un match
+    isStarted = false;
     gladiator->log("Appel de la fonction de reset");
 }
 
@@ -23,12 +20,17 @@ void loop()
 {
     //Position position;
     //static int temp;
-    if (gladiator->game->isStarted()) //&& !isStarted)
+    if (gladiator->game->isStarted() && !isStarted)
     {
-        // isStarted = true;
-        Position pos = gladiator->nextPosition();
-        gladiator->log("Position x: %f, y: %f", pos.x, pos.y);
-        gladiator->moveTo(pos.x, pos.y);
+        isStarted = true;
+        // Position pos = gladiator->nextPosition();
+        // gladiator->log("Position x: %f, y: %f", pos.x, pos.y);
+        // gladiator->moveTo(pos.x, pos.y);
+        gladiator->newFoward(0.214);
+        delay(1000);
+        gladiator->newFoward(0.214);
+        delay(1000);
+        gladiator->newFoward(0.214);
     }
     else
     {
