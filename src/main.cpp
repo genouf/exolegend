@@ -4,13 +4,16 @@
 #include "vector2.h"
 #include "utils.h"
 #include "Warrior.hpp"
+#include "OurGladiator.h"
 
 Warrior* gladiator;
-int init = 0;
+bool isStarted = false;
+bool inside = true;
 
 void reset() {
     gladiator->reset();
-    init = 0;
+    isStarted = false;
+    inside = true;
 }
 
 inline float moduloPi(float a) // return angle in [-pi; pi]
@@ -71,28 +74,35 @@ void setup() {
     gladiator->game->onReset(&reset);
 }
 
+
 void loop() {
-    static Vector2 target;
+    static Vector2          target;
 
     if (gladiator->game->isStarted())
     {
-        // gladiator->moveTo((Vect2){(7 + 0.5f) * 0.214f, (7 + 0.5f) * 0.214f});
-        // delay(2000);
-        if (init == 0) {
-           init_target(target, gladiator);
-           init++;
-        }
-        if (gladiator->aim(target.x(), target.y()))
+        struct timeval start_time;
+        if (isStarted == false)
         {
-           gladiator->log("target atteinte !");
-           update_target(target, gladiator);
-       }
-        // if (inside)
-        // if (isOutside)
-        // {
-
-        // }
-
+            gettimeofday(&start_time, NULL);
+            init_target(target, gladiator);
+            inside = true;
+            isStarted = true;
+        }
+        if (detectOutside(gladiator, start_time))
+        {
+            init_target(target, gladiator);
+            inside = false;
+        }
+        if (inside == false && !detectOutside(gladiator, start_time))
+        {
+            inside = true;
+            onEstLa(target, gladiator);
+        }
+        if (gladiator->aim(target.x(), target.y()) && inside)
+        {
+            // gladiator->log("target atteinte !");
+            update_target(target, gladiator);
+        }
     }
     delay(4); // boucle à 100Hz
 }

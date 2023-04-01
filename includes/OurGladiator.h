@@ -1,6 +1,9 @@
 #ifndef OURGLADIATOR_H
 #define OURGLADIATOR_H
 
+#include <iostream>
+#include <sys/time.h>
+
 #include "gladiator.h"
 
 struct Vect2
@@ -44,6 +47,9 @@ public:
     MazeSquare *getForwardCase();
     MazeSquare *getBackwardCase();
     bool   isOutsideMap();
+
+    /*  NEW */
+    void newFoward(float distance);
 
     void moveTo(float x, float y);
     void moveTo(Vect2 position);
