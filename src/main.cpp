@@ -71,34 +71,34 @@ void setup() {
 
 
 void loop() {
-    static Vector2 target;
+    static Vector2          target;
+    static bool             inside;
 
     if (gladiator->game->isStarted())
     {
         struct timeval start_time;
-        // gladiator->moveTo((Vect2){(7 + 0.5f) * 0.214f, (7 + 0.5f) * 0.214f});
-        // delay(2000);
         if (isStarted == false)
         {
             gettimeofday(&start_time, NULL);
             init_target(target, gladiator);
+            inside = true;
             isStarted = true;
         }
         if (detectOutside(gladiator, start_time))
+        {
             init_target(target, gladiator);
-
-
+            inside = false;
+        } 
+        if (inside == false && !detectOutside(gladiator, start_time))
+        {
+            inside = true;
+            onEstLa(target, gladiator);
+        }
         if (aim(gladiator, {target.x(), target.y()}, 0))
         {
-           gladiator->log("target atteinte !");
-           update_target(target, gladiator);
-       }
-        // if (inside)
-        // if (isOutside)
-        // {
-
-        // }
-
+            // gladiator->log("target atteinte !");
+            update_target(target, gladiator);
+        }
     }
     delay(10); // boucle à 100Hz
 }
