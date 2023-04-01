@@ -1,5 +1,10 @@
 #include "OurGladiator.h"
 
+OurGladiator::OurGladiator(void): Gladiator(), _speed(0.2), _omega(0)
+{
+    this->_omega = this->_speed / (2.0 * PI * this->robot->getRobotRadius());
+}
+
 void OurGladiator::stop(void) {
     this->control->setWheelSpeed(WheelAxis::RIGHT, 0);
     this->control->setWheelSpeed(WheelAxis::LEFT, 0);
@@ -14,11 +19,6 @@ void OurGladiator::setSpeed(float left, float right) {
 void OurGladiator::updateSpeed(float speed)
 {
     this->_speed = speed;
-    this->_omega = this->_speed / (2.0 * PI * this->robot->getRobotRadius());
-}
-
-OurGladiator::OurGladiator(void): Gladiator(), _speed(0.6), _omega(0)
-{
     this->_omega = this->_speed / (2.0 * PI * this->robot->getRobotRadius());
 }
 
@@ -100,31 +100,33 @@ float   distance( float x, float y)
     return (sqrt(distance2(x, y)));
 }
 
-// int OurGladiator::getLeft(MazeSquare current)
-// {
-//     int dir = findDirection(this);
-//     if (dir == 1)
-//         return (current.westSquare);
-//     else if (dir == 2)
-//         return (current.southSquare);
-//     else if (dir == 3)
-//         return (current.eastSquare);
-//     else if (dir == 4)
-//         return (current.northSquare);
-//     if (current.westSquare)
-//         return (1);
-//     return (0);
-// }
+bool    coinAvailable(MazeSquare current)
+{
+    if (current.westSquare && current.westSquare->coin.value != 0)
+        return (true);
+    else if (current.northSquare && current.northSquare->coin.value != 0)
+        return (true);
+    else if (current.eastSquare && current.eastSquare->coin.value != 0)
+        return (true);
+    else if (current.southSquare && current.southSquare->coin.value != 0)
+        return (true);
+    return (false);
+}
 
 static MazeSquare* getNextSquare(MazeSquare current)
 {
-    if (current.westSquare)
+    bool coin = true;
+
+    if (coinAvailable(current))
+        coin = false;
+
+    if (current.westSquare && (current.westSquare->coin.value != 0 || coin))
         return (current.westSquare);
-    else if (current.northSquare)
+    else if (current.northSquare && (current.northSquare->coin.value != 0 || coin))
         return (current.northSquare);
-    else if (current.eastSquare)
+    else if (current.eastSquare && (current.eastSquare->coin.value != 0 || coin))
         return (current.eastSquare);
-    else if (current.southSquare)
+    else if (current.southSquare && (current.southSquare->coin.value != 0 || coin))
         return (current.southSquare);
     return (current.southSquare);
 }

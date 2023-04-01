@@ -2,6 +2,7 @@
 
 /*  GLOBAL VAR  */
 OurGladiator*  gladiator;
+// bool           isStarted = false;
 
 void reset();
 
@@ -22,10 +23,11 @@ void loop()
 {
     //Position position;
     //static int temp;
-    if (gladiator->game->isStarted())
+    if (gladiator->game->isStarted()) //&& !isStarted)
     {
-        // Position nextPosition = findCenter(findNextSquare(gladiator, findDirection(gladiator)));
+        // isStarted = true;
         Position pos = gladiator->nextPosition();
+        gladiator->log("Position x: %f, y: %f", pos.x, pos.y);
         gladiator->moveTo(pos.x, pos.y);
     }
     else
