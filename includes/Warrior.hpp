@@ -20,6 +20,14 @@ typedef struct s_newpos
 class Warrior: public Gladiator
 {
 public:
+    enum class State {
+        INIT,
+        SEARCH,
+        KILL,
+        RUN,
+        GOINSIDE,
+    };
+
     Warrior();
     ~Warrior() {}
 
@@ -48,6 +56,16 @@ public:
     Vect2 getBestCaseRecenter(t_coord major, t_coord minor1, t_coord minor2);
     MazeSquare getNearestSquare();
     void setNearestSquare(void);
+    void enforceForward(void);
+
+    /*  Init    */
+    void            initMap(void);
+    bool            checkRobots(void);
+    void            continueChasing(RobotData enemy_data);
+    int             enemyId;
+    RobotData       data0;
+    State           state;
+
 
 private:
 
@@ -60,6 +78,9 @@ private:
     float direction;
 
     MazeSquare nearest;
+
+    /*  Kill */
+    // MazeSquare   map[14][14];
 
     static constexpr float DELAY = 4.0f;
     static constexpr float AMORTIZE = 0.1f;

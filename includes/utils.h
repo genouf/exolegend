@@ -20,3 +20,4 @@ void    update_target(Vect2 &target, Warrior *gladiator);
 void	targetMiddle(Vect2 &target);
 void 	targetCenterNearest(Vect2& target, Warrior *gladiator);
 void 	setTarget(Vect2& target, float x, float y);
+void 	setTargetPosition(Vect2& target, float x, float y);

@@ -33,14 +33,65 @@ MazeSquare Warrior::getNearestSquare(void)
     return (this->nearest);
 }
 
+// void Warrior::initMap(void)
+// {
+//     for (int i = 0; i < 14; i++)
+//     {
+//         for (int j = 0; j < 14; j++)
+//         {
+//             map[i][j] = this->maze->getSquare(i, j);
+//             this->log("map[%d][%d] = %d", i, j, map[i][j].coin.value);
+//         }
+//     }
+// }
+
+bool Warrior::checkRobots(void)
+{
+    RobotList list = this->game->getPlayingRobotsId();
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (list.ids[i] == this->data0.id || list.ids[i] == 0)
+            continue;
+        RobotData data = this->game->getOtherRobotData(list.ids[i]);
+        if (data.teamId != this->data0.teamId)
+        {
+            Position self = this->robot->getData().position;
+            Position enemy = data.position;
+            float dist = norm2(self.x - enemy.x, self.y - enemy.y);
+            this->log("myId : %d", this->data0.id);
+            this->log("enemyID : %d", list.ids[i]);
+            this->log("dist: %f", dist);
+            if (dist < 0.25)
+            {
+                this->enemyId = list.ids[i];
+                return (true);
+            }
+        }
+    }
+    return (false);
+}
+
+void    Warrior::continueChasing(RobotData enemy_data)
+{
+    Position self = this->robot->getData().position;
+    Position enemy = enemy_data.position;
+    int      enemy_life = enemy_data.lifes;
+    float dist = norm2(self.x - enemy.x, self.y - enemy.y);
+    if (enemy_life == 0 || dist > 0.40)
+        this->state = State::SEARCH;
+}
+
 Warrior::Warrior(): Gladiator() {
     this->reset();
+    // this->data0 = this->robot->getData();
 }
 
 void Warrior::reset(void)
 {
     this->stop();
     this->direction = 1;
+    this->state = State::INIT;
 }
 
 bool Warrior::aim(float x, float y)
@@ -68,7 +119,7 @@ bool Warrior::aim(float x, float y)
         this->theta = angle0;
     }
 
-    if (abs(angle) > PI * 0.51)
+    if (this->state != State::KILL && abs(angle) > PI * 0.51)
     {
         this->direction *= -1;
         this->log("new direction: %.0f angle: %f", this->direction, angle);
@@ -301,13 +352,13 @@ Vect2 Warrior::getBestCaseRecenter(t_coord major, t_coord minor1, t_coord minor2
 Vect2 Warrior::moveToCenter(MazeSquare current)
 {
     if (current.i < 7 && current.j < 7)
-        return (this->getBestCaseRecenter((t_coord){current.i + 1, current.j + 1}, (t_coord){current.i + 1, current.j}, (t_coord){current.i, current.j + 1}));
+        return (this->getBestCaseRecenter({current.i, current.j + 1}, {current.i + 1, current.j + 1}, {current.i + 1, current.j}));
     if (current.i < 7 && current.j > 7)
-        return (this->getBestCaseRecenter({current.i + 1, current.j - 1}, {current.i + 1, current.j}, {current.i, current.j - 1}));
+        return (this->getBestCaseRecenter({current.i, current.j - 1}, {current.i + 1, current.j - 1}, {current.i + 1, current.j}));
     if (current.i > 7 && current.j < 7)
-        return (this->getBestCaseRecenter({current.i - 1, current.j + 1}, {current.i - 1, current.j}, {current.i, current.j + 1}));
+        return (this->getBestCaseRecenter({current.i, current.j + 1}, {current.i - 1, current.j + 1}, {current.i - 1, current.j}));
     if (current.i > 7 && current.j > 7)
-        return (this->getBestCaseRecenter({current.i - 1, current.j - 1}, {current.i - 1, current.j}, {current.i, current.j - 1}));
+        return (this->getBestCaseRecenter({current.i, current.j - 1}, {current.i - 1, current.j - 1}, {current.i - 1, current.j}));
     return ((Vect2){setPositionFromIndex(6.5), setPositionFromIndex(6.5)});
 }
 
@@ -380,4 +431,11 @@ s_newpos Warrior::getNextSquare()
     if (next)
         return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
     return ((s_newpos){this->moveToCenter(current), 0});
+}
+
+void Warrior::enforceForward(void)
+{
+    if (this->direction == -1)
+        this->speed *= -0.9;
+    this->direction = 1;
 }

@@ -8,19 +8,8 @@
 
 Warrior* gladiator;
 
-enum class State {
-    INIT,
-    SEARCH,
-    KILL,
-    RUN,
-    GOINSIDE,
-};
-
-State state;
-
 void reset() {
     gladiator->reset();
-    state = State::INIT;
     randomSeed(analogRead(0));
 }
 
@@ -42,37 +31,51 @@ void loop() {
     {
         gladiator->setNearestSquare();
 //        struct timeval start_time;
-        if (state == State::INIT)
+        if (gladiator->state == Warrior::State::INIT)
         {
             setTarget(target, gladiator->getNearestSquare().i, gladiator->getNearestSquare().j);
             // init_target(target, gladiator);
             start_time = millis();
             //          gettimeofday(&start_time, NULL);
-            state = State::SEARCH;
+            gladiator->state = Warrior::State::SEARCH;
+            gladiator->data0 = gladiator->robot->getData();
+        }
+        if (gladiator->state == Warrior::State::KILL || gladiator->checkRobots())
+        {
+            if (gladiator->state != Warrior::State::KILL)
+                gladiator->state = Warrior::State::KILL;
+            gladiator->enforceForward();
+            RobotData enemy_data = gladiator->game->getOtherRobotData(gladiator->enemyId);
+            gladiator->continueChasing(enemy_data);
+            if (gladiator->state == Warrior::State::KILL)
+            {
+                // gladiator->log("GO KILL ! TargetId : %d", gladiator->enemyId);
+                setTargetPosition(target, enemy_data.position.x, enemy_data.position.y);
+            }
         }
         if (detectOutside(gladiator, start_time))
         {
             targetMiddle(target);
-            state = State::GOINSIDE;
+            gladiator->state = Warrior::State::GOINSIDE;
         }
-        if (state == State::GOINSIDE && !detectOutside(gladiator, start_time))
+        if (gladiator->state == Warrior::State::GOINSIDE && !detectOutside(gladiator, start_time))
         {
             targetCenterNearest(target, gladiator);
-            state = State::SEARCH;
+            gladiator->state = Warrior::State::SEARCH;
         }
 
         status = gladiator->aim(target.x(), target.y()) ;
-        if (status && state == State::SEARCH)
+        if (status && gladiator->state == Warrior::State::SEARCH)
         {
             update_target(target, gladiator);
             gladiator->log("TargetReach: NewTarget: %f, %f", target.x(), target.y());
         }
-        else if (status && state == State::GOINSIDE)
+        else if (status && gladiator->state == Warrior::State::GOINSIDE)
         {
             //do something else
         }
-        //display state
-        // gladiator->log("State: %d", (int)state);
+        //display gladiator->state
+        // gladiator->log("State: %d", (int)gladiator->state);
     }
     delay(4); // boucle à 250Hz
 }

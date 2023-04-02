@@ -80,3 +80,9 @@ void 	setTarget(Vect2& target, float x, float y)
 	target.set_x(setPositionFromIndex(x));
 	target.set_y((setPositionFromIndex(y)));
 }
+
+void 	setTargetPosition(Vect2& target, float x, float y)
+{
+	target.set_x(x);
+	target.set_y(y);
+}
