@@ -14,6 +14,14 @@ typedef struct s_coord
 class Warrior: public Gladiator
 {
 public:
+    enum class State {
+        INIT,
+        SEARCH,
+        KILL,
+        RUN,
+        GOINSIDE,
+    };
+
     Warrior();
     ~Warrior() {}
 
@@ -36,6 +44,15 @@ public:
     MazeSquare getNearestSquare();
     void setNearestSquare(void);
 
+    /*  Init    */
+    void            initMap(void);
+    bool            checkRobots(void);
+    void            continueChasing(RobotData enemy_data);
+    int             enemyId;
+    RobotData       data0;
+    State           state;
+
+
 private:
 
     float speed;
@@ -47,6 +64,9 @@ private:
     float direction;
 
     MazeSquare nearest;
+
+    /*  Kill */
+    // MazeSquare   map[14][14];
 
     static constexpr float DELAY = 4.0f;
     static constexpr float AMORTIZE = 0.1f;

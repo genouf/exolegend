@@ -32,14 +32,65 @@ MazeSquare Warrior::getNearestSquare(void)
     return (this->nearest);
 }
 
+// void Warrior::initMap(void)
+// {
+//     for (int i = 0; i < 14; i++)
+//     {
+//         for (int j = 0; j < 14; j++)
+//         {
+//             map[i][j] = this->maze->getSquare(i, j);
+//             this->log("map[%d][%d] = %d", i, j, map[i][j].coin.value);
+//         }
+//     }
+// }
+
+bool Warrior::checkRobots(void)
+{
+    RobotList list = this->game->getPlayingRobotsId();
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (list.ids[i] == this->data0.id || list.ids[i] == 0)
+            continue;
+        RobotData data = this->game->getOtherRobotData(list.ids[i]);
+        if (data.teamId != this->data0.teamId)
+        {
+            Position self = this->robot->getData().position;
+            Position enemy = data.position;
+            float dist = norm2(self.x - enemy.x, self.y - enemy.y);
+            this->log("myId : %d", this->data0.id);
+            this->log("enemyID : %d", list.ids[i]);
+            this->log("dist: %f", dist);
+            if (dist < 0.25)
+            {
+                this->enemyId = list.ids[i];
+                return (true);
+            }
+        }
+    }
+    return (false);
+}
+
+void    Warrior::continueChasing(RobotData enemy_data)
+{
+    Position self = this->robot->getData().position;
+    Position enemy = enemy_data.position;
+    int      enemy_life = enemy_data.lifes;
+    float dist = norm2(self.x - enemy.x, self.y - enemy.y);
+    if (enemy_life == 0 || dist > 0.40)
+        this->state = State::SEARCH;
+}
+
 Warrior::Warrior(): Gladiator() {
     this->reset();
+    // this->data0 = this->robot->getData();
 }
 
 void Warrior::reset(void)
 {
     this->stop();
     this->direction = 1;
+    this->state = State::INIT;
 }
 
 bool Warrior::aim(float x, float y)
