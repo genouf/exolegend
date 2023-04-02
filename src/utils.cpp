@@ -52,10 +52,13 @@ void	init_target(Vect2 &target, Warrior *gladiator)
 	}
 }
 
-void	targetMiddle(Vect2 &target)
+void	targetMiddle(Vect2 &target, Warrior *gladiator)
 {
-	target.set_x(setPositionFromIndex(6.5));
-	target.set_y((setPositionFromIndex(6.5)));
+	Position pos = gladiator->robot->getData().position;
+	MazeSquare current =  gladiator->maze->getSquare(setIndexFromPosition(pos.x), setIndexFromPosition(pos.y));
+	Vect2 vec = gladiator->moveToCenter(current);
+	target.set_x(vec.x());
+	target.set_y(vec.y());
 }
 
 void	update_target(Vect2 &target, Warrior *gladiator)

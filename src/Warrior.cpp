@@ -59,9 +59,9 @@ bool Warrior::checkRobots(void)
             Position self = this->robot->getData().position;
             Position enemy = data.position;
             float dist = norm2(self.x - enemy.x, self.y - enemy.y);
-            this->log("myId : %d", this->data0.id);
-            this->log("enemyID : %d", list.ids[i]);
-            this->log("dist: %f", dist);
+            // this->log("myId : %d", this->data0.id);
+            // this->log("enemyID : %d", list.ids[i]);
+            // this->log("dist: %f", dist);
             if (dist < 0.25)
             {
                 this->enemyId = list.ids[i];
@@ -103,7 +103,9 @@ bool Warrior::aim(float x, float y)
 
     if (norm2(x - current.x, y - current.y) < Warrior::THRESH2)
     {
-        this->stop();
+        // this->stop();
+        this->ghostX = -1;
+        this->ghostY = -1;
         return true;
     }
 
@@ -122,7 +124,7 @@ bool Warrior::aim(float x, float y)
     if (this->state != State::KILL && abs(angle) > PI * 0.51)
     {
         this->direction *= -1;
-        this->log("new direction: %.0f angle: %f", this->direction, angle);
+        // this->log("new direction: %.0f angle: %f", this->direction, angle);
         this->speed *= -0.9;
         return (false);
     }
@@ -338,29 +340,26 @@ MazeSquare* Warrior::getNearestJewelInDirection(MazeSquare *allSquare[4])
     return (next);
 }
 
-Vect2 Warrior::getBestCaseRecenter(t_coord major, t_coord minor1, t_coord minor2)
+Vect2 Warrior::getBestCaseRecenter(t_coord major, t_coord minor1)
 {
     int majorValue = this->maze->getSquare(major.x, major.y).coin.value;
     int minor1Value = this->maze->getSquare(minor1.x, minor1.y).coin.value;
-    int minor2Value = this->maze->getSquare(minor2.x, minor2.y).coin.value;
 
-    if (minor1Value > minor2Value && minor1Value > majorValue)
+    if (minor1Value > majorValue)
         return ((Vect2){setPositionFromIndex((float)minor1.x), setPositionFromIndex((float)minor1.y)});
-    if (minor2Value > majorValue)
-        return ((Vect2){setPositionFromIndex((float)minor2.x), setPositionFromIndex((float)minor2.y)});
     return ((Vect2){setPositionFromIndex((float)major.x), setPositionFromIndex((float)major.y)});
 }
 
 Vect2 Warrior::moveToCenter(MazeSquare current)
 {
     if (current.i < 7 && current.j < 7)
-        return (this->getBestCaseRecenter({current.i, current.j + 1}, {current.i + 1, current.j + 1}, {current.i + 1, current.j}));
+        return (this->getBestCaseRecenter({current.i, current.j + 1}, {current.i + 1, current.j}));
     if (current.i < 7 && current.j > 7)
-        return (this->getBestCaseRecenter({current.i, current.j - 1}, {current.i + 1, current.j - 1}, {current.i + 1, current.j}));
+        return (this->getBestCaseRecenter({current.i, current.j - 1}, {current.i + 1, current.j}));
     if (current.i > 7 && current.j < 7)
-        return (this->getBestCaseRecenter({current.i, current.j + 1}, {current.i - 1, current.j + 1}, {current.i - 1, current.j}));
+        return (this->getBestCaseRecenter({current.i, current.j + 1}, {current.i - 1, current.j}));
     if (current.i > 7 && current.j > 7)
-        return (this->getBestCaseRecenter({current.i, current.j - 1}, {current.i - 1, current.j - 1}, {current.i - 1, current.j}));
+        return (this->getBestCaseRecenter({current.i, current.j - 1}, {current.i - 1, current.j}));
     return ((Vect2){setPositionFromIndex(6.5), setPositionFromIndex(6.5)});
 }
 

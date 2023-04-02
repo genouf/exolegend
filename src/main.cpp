@@ -54,7 +54,7 @@ void loop() {
         }
         if (detectOutside(gladiator, start_time))
         {
-            targetMiddle(target);
+            targetMiddle(target, gladiator);
             gladiator->state = Warrior::State::GOINSIDE;
         }
         if (gladiator->state == Warrior::State::GOINSIDE && !detectOutside(gladiator, start_time))
@@ -67,7 +67,7 @@ void loop() {
         if (status && gladiator->state == Warrior::State::SEARCH)
         {
             update_target(target, gladiator);
-            gladiator->log("TargetReach: NewTarget: %f, %f", target.x(), target.y());
+            // gladiator->log("TargetReach: NewTarget: %f, %f", target.x(), target.y());
         }
         else if (status && gladiator->state == Warrior::State::GOINSIDE)
         {
