@@ -48,10 +48,9 @@ void loop() {
             RobotData enemy_data = gladiator->game->getOtherRobotData(gladiator->enemyId);
             gladiator->continueChasing(enemy_data);
             if (gladiator->state == Warrior::State::KILL)
-            {
-                // gladiator->log("GO KILL ! TargetId : %d", gladiator->enemyId);
                 setTargetPosition(target, enemy_data.position.x, enemy_data.position.y);
-            }
+            else
+                update_target(target, gladiator);
         }
         if (detectOutside(gladiator, start_time))
         {
@@ -64,7 +63,7 @@ void loop() {
             gladiator->state = Warrior::State::SEARCH;
         }
 
-        status = gladiator->aim(target.x(), target.y()) ;
+        status = gladiator->aim(target.x(), target.y());
         if (status && gladiator->state == Warrior::State::SEARCH)
         {
             update_target(target, gladiator);

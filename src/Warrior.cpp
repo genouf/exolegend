@@ -296,6 +296,8 @@ MazeSquare *Warrior::getJewelInLine(MazeSquare *allSquare[4])
         score1 = -1;
     if (score2 > 4)
         score2 = -1;
+    if ((front == NULL || score1 == -1) && (back == NULL || score2 == -1))
+        return (NULL);
     if (front == NULL)
         return (back);
     if (back == NULL)
@@ -409,6 +411,52 @@ MazeSquare  *Warrior::getRandomMove(MazeSquare *allSquare[4], MazeSquare *from)
     return (NULL);
 }
 
+MazeSquare *Warrior::getJewelSquarePos(MazeSquare *allSquare[4], MazeSquare *from, int depth, int max_depth)
+{
+    if (depth > max_depth)
+        return (0);
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (allSquare[i] == from || allSquare[i] == NULL)
+            continue ;
+        else if (allSquare[i] != NULL && allSquare[i]->coin.value != 0)
+        {
+            return (allSquare[i]);
+        }
+    }
+    
+    MazeSquare *tmp[4];
+    MazeSquare *val;
+    for (int i = 0; i < 4; i++)
+    {
+        if (allSquare[i])
+        {
+            this->get_square_rotater(*allSquare[i], tmp);
+            val = this->getJewelSquarePos(tmp, allSquare[i], depth + 1, max_depth);
+            if (val)
+                return (allSquare[i]);
+        }
+    }
+    return (0);
+}
+
+MazeSquare *Warrior::getSmartMove(MazeSquare *allSquare[4], MazeSquare *from)
+{
+    MazeSquare *next = NULL;
+
+    next = this->getJewelSquarePos(allSquare, from, 0, 2);
+    if (next)
+        return (next);
+    next = this->getJewelSquarePos(allSquare, from, 0, 3);
+    if (next)
+        return (next);
+    next = this->getJewelSquarePos(allSquare, from, 0, 4);
+    if (next)
+        return (next);
+    return (NULL);
+}
+
 s_newpos Warrior::getNextSquare()
 {
     Position pos = this->robot->getData().position;
@@ -427,7 +475,7 @@ s_newpos Warrior::getNextSquare()
 	next = this->getNearestJewelInDirection(allSquare);
     if (next)
         return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
-    next = this->getRandomMove(allSquare, 0);
+    next = this->getSmartMove(allSquare, 0);
     if (next)
         return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
     return ((s_newpos){this->moveToCenter(current), 0});
