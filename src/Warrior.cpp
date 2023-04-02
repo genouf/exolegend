@@ -1,6 +1,7 @@
 #include "Warrior.hpp"
 #include "vector2.h"
 #include "utils.h"
+#include <cstdlib>
 
 static inline float mod2PI(float theta)
 {
@@ -190,12 +191,13 @@ MazeSquare* Warrior::getJewelNext(MazeSquare *allSquare[4])
     return (next);
 }
 
-MazeSquare* Warrior::getJewelBackMe(MazeSquare *allSquare[4])
+MazeSquare* Warrior::getJewelBackMe(MazeSquare *allSquare[4], int *score)
 {
     MazeSquare* next = NULL;
     MazeSquare* allSquareTMP[4] = {allSquare[0], allSquare[1], allSquare[2], allSquare[3]};
     while (allSquare[2] != NULL)
     {
+        *score+=1;
         if (allSquare[2]->coin.value != 0)
         {
             next = allSquareTMP[2];  /* SetFirstActionToJoinJewel */
@@ -211,12 +213,13 @@ MazeSquare* Warrior::getJewelBackMe(MazeSquare *allSquare[4])
     return (next);
 }
 
-MazeSquare* Warrior::getJewelFrontMe(MazeSquare *allSquare[4])
+MazeSquare* Warrior::getJewelFrontMe(MazeSquare *allSquare[4], int *score)
 {
     MazeSquare* next = NULL;
     MazeSquare* allSquareTMP[4] = {allSquare[0], allSquare[1], allSquare[2], allSquare[3]};
     while (allSquare[0] != NULL)
     {
+        *score+=1;
         if (allSquare[0]->coin.value != 0)
         {
             next = allSquareTMP[0];  /* SetFirstActionToJoinJewel */
@@ -230,6 +233,25 @@ MazeSquare* Warrior::getJewelFrontMe(MazeSquare *allSquare[4])
     allSquare[2] = allSquareTMP[2];
     allSquare[3] = allSquareTMP[3];
     return (next);
+}
+
+MazeSquare *Warrior::getJewelInLine(MazeSquare *allSquare[4])
+{
+    int score1 = 0;
+    int score2 = 0;
+    MazeSquare* front = this->getJewelFrontMe(allSquare, &score1);
+    MazeSquare* back = this->getJewelBackMe(allSquare, &score2);
+    if (score1 > 4)
+        score1 = -1;
+    if (score2 > 4)
+        score2 = -1;
+    if (front == NULL)
+        return (back);
+    if (back == NULL)
+        return (front);
+    if (score1 < score2)
+        return (front);
+    return (back);
 }
 
 MazeSquare* Warrior::getNearestJewelInDirection(MazeSquare *allSquare[4])
@@ -289,7 +311,54 @@ Vect2 Warrior::moveToCenter(MazeSquare current)
     return ((Vect2){setPositionFromIndex(6.5), setPositionFromIndex(6.5)});
 }
 
-Vect2 Warrior::getNextSquare()
+bool Warrior::checkIfThereIsAJewel(MazeSquare *allSquare[4], MazeSquare *from, int depth)
+{
+    if (depth > 3)
+        return (0);
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (allSquare[i] == from || allSquare[i] == NULL)
+            continue ;
+        else if (allSquare[i] != NULL && allSquare[i]->coin.value != 0)
+        {
+            return (1);
+        }
+    }
+    
+    MazeSquare *tmp[4];
+    int         val;
+    for (int i = 0; i < 4; i++)
+    {
+        if (allSquare[i])
+        {
+            this->get_square_rotater(*allSquare[i], tmp);
+            val = this->checkIfThereIsAJewel(tmp, allSquare[i], depth + 1);
+            if (val)
+                return (val);
+        }
+    }
+    return (0);
+}
+
+MazeSquare  *Warrior::getRandomMove(MazeSquare *allSquare[4], MazeSquare *from)
+{
+    if (!this->checkIfThereIsAJewel(allSquare, from, 0))
+        return (NULL);
+
+    if (!allSquare[0] && !allSquare[1] && !allSquare[2] && !allSquare[3])
+        return (NULL);
+
+    while (1)
+    {
+        int n = random(0, 4);
+        if (allSquare[n] && allSquare[n] != from)
+            return (allSquare[n]);
+    }
+    return (NULL);
+}
+
+s_newpos Warrior::getNextSquare()
 {
     Position pos = this->robot->getData().position;
 	MazeSquare current = this->maze->getSquare(setIndexFromPosition(pos.x), setIndexFromPosition(pos.y));
@@ -298,15 +367,17 @@ Vect2 Warrior::getNextSquare()
 
     MazeSquare* next = NULL;
 
-    next = this->getJewelFrontMe(allSquare);
+    next = this->getJewelInLine(allSquare);
     if (next)
-        return ((Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)});
+        return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
     next = this->getJewelNext(allSquare);
     if (next)
-	    return ((Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)});
+	    return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
 	next = this->getNearestJewelInDirection(allSquare);
     if (next)
-        return ((Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)});
-
-    return (this->moveToCenter(current));
+        return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
+    next = this->getRandomMove(allSquare, 0);
+    if (next)
+        return ((s_newpos){(Vect2){setPositionFromIndex(next->i), setPositionFromIndex(next->j)}, next});
+    return ((s_newpos){this->moveToCenter(current), 0});
 }

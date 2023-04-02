@@ -10,6 +10,12 @@ typedef struct s_coord
     int y;
 } t_coord;
 
+typedef struct s_newpos
+{
+   Vect2 vec;
+   MazeSquare *square;
+} t_newpos;
+
 
 class Warrior: public Gladiator
 {
@@ -27,10 +33,15 @@ public:
     /* Algorithm */
     int	findDirection(void);
     void get_square_rotater(MazeSquare current, MazeSquare *allSquare[4]);
-    Vect2 getNextSquare();
+    s_newpos getNextSquare();
     MazeSquare* getJewelNext(MazeSquare *allSquare[4]);
-    MazeSquare* getJewelFrontMe(MazeSquare *allSquare[4]);
-    MazeSquare* getJewelBackMe(MazeSquare *allSquare[4]);
+    MazeSquare* getJewelBackMe(MazeSquare *allSquare[4], int *score);
+    MazeSquare* getJewelFrontMe(MazeSquare *allSquare[4], int *score);
+    MazeSquare* getJewelInLine(MazeSquare *allSquare[4]);
+    MazeSquare* getRandomMove(MazeSquare *allSquare[4], MazeSquare *from);
+    bool checkIfThereIsAJewel(MazeSquare *allSquare[4], MazeSquare *from, int depth);
+
+
 
     MazeSquare* getNearestJewelInDirection(MazeSquare *allSquare[4]);
     Vect2 moveToCenter(MazeSquare current);

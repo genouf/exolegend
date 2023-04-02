@@ -21,6 +21,7 @@ State state;
 void reset() {
     gladiator->reset();
     state = State::INIT;
+    randomSeed(analogRead(0));
 }
 
 void setup() {

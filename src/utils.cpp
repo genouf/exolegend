@@ -62,9 +62,10 @@ void	update_target(Vect2 &target, Warrior *gladiator)
 {
 	static int i = 0;
 
-	Vect2 pos = gladiator->getNextSquare();
-	target.set_x(pos.x());
-	target.set_y(pos.y());
+	s_newpos pos = gladiator->getNextSquare();
+	
+	target.set_x(pos.vec.x());
+	target.set_y(pos.vec.y());
 	i++;
 }
 
