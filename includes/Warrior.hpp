@@ -86,7 +86,7 @@ private:
 
     static constexpr float DELAY = 4.0f;
     static constexpr float AMORTIZE = 0.1f;
-    static constexpr float MAX_SPEED = 0.25f;
+    static constexpr float MAX_SPEED = 0.4f;
     static constexpr float MAX_SPEED2 = MAX_SPEED * MAX_SPEED;
     static constexpr float THRESH = 0.03f;
     static constexpr float THRESH2 = THRESH * THRESH;

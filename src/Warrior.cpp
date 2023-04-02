@@ -445,13 +445,13 @@ MazeSquare *Warrior::getSmartMove(MazeSquare *allSquare[4], MazeSquare *from)
 {
     MazeSquare *next = NULL;
 
+    // next = this->getJewelSquarePos(allSquare, from, 0, 1);
+    // if (next)
+    //     return (next);
     next = this->getJewelSquarePos(allSquare, from, 0, 2);
     if (next)
         return (next);
     next = this->getJewelSquarePos(allSquare, from, 0, 3);
-    if (next)
-        return (next);
-    next = this->getJewelSquarePos(allSquare, from, 0, 4);
     if (next)
         return (next);
     return (NULL);
