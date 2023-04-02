@@ -223,13 +223,14 @@ void Warrior::get_square_rotater(MazeSquare current, MazeSquare *allSquare[4])
 
 MazeSquare* Warrior::getJewelNext(MazeSquare *allSquare[4])
 {
-    if (allSquare[(int)Direction::NORTH] != NULL && allSquare[(int)Direction::NORTH]->coin.value != 0)
-        return (allSquare[(int)Direction::NORTH]);
-
+    if (allSquare[Direction::NORTH] != NULL && allSquare[Direction::NORTH]->coin.value != 0)
+        return (allSquare[Direction::NORTH]);
+    if (allSquare[Direction::SOUTH] != NULL && allSquare[Direction::SOUTH]->coin.value != 0)
+        return (allSquare[Direction::SOUTH]);
     int max = 0;
     MazeSquare* next = NULL;
     
-    for (int i = 1; i < 4; i++)
+    for (int i = 1; i < 4; i+=2)
     {
         if (allSquare[i] != NULL && allSquare[i]->coin.value > max)
         {
@@ -240,20 +241,41 @@ MazeSquare* Warrior::getJewelNext(MazeSquare *allSquare[4])
     return (next);
 }
 
+MazeSquare* Warrior::getJewelBackMe(MazeSquare *allSquare[4])
+{
+    MazeSquare* next = NULL;
+    MazeSquare* allSquareTMP[4] = {allSquare[0], allSquare[1], allSquare[2], allSquare[3]};
+    while (allSquare[2] != NULL)
+    {
+        if (allSquare[2]->coin.value != 0)
+        {
+            next = allSquareTMP[2];  /* SetFirstActionToJoinJewel */
+            break ;
+        }
+        this->get_square_rotater(*allSquare[2], allSquare);
+    }
+    /* Reset allSquare*/
+    allSquare[0] = allSquareTMP[0];
+    allSquare[1] = allSquareTMP[1];
+    allSquare[2] = allSquareTMP[2];
+    allSquare[3] = allSquareTMP[3];
+    return (next);
+}
+
 MazeSquare* Warrior::getJewelFrontMe(MazeSquare *allSquare[4])
 {
-    MazeSquare* allSquareTMP[4] = {allSquare[0], allSquare[1], allSquare[2], allSquare[3]};
-
     MazeSquare* next = NULL;
-    while (allSquare[Direction::NORTH] != NULL)
+    MazeSquare* allSquareTMP[4] = {allSquare[0], allSquare[1], allSquare[2], allSquare[3]};
+    while (allSquare[0] != NULL)
     {
-        if (allSquare[Direction::NORTH]->coin.value != 0)
+        if (allSquare[0]->coin.value != 0)
         {
-            next = allSquareTMP[Direction::NORTH];
-            break;
+            next = allSquareTMP[0];  /* SetFirstActionToJoinJewel */
+            break ;
         }
-        this->get_square_rotater(*allSquare[Direction::NORTH], allSquare);
+        this->get_square_rotater(*allSquare[0], allSquare);
     }
+    /* Reset allSquare*/
     allSquare[0] = allSquareTMP[0];
     allSquare[1] = allSquareTMP[1];
     allSquare[2] = allSquareTMP[2];
@@ -266,7 +288,7 @@ MazeSquare* Warrior::getNearestJewelInDirection(MazeSquare *allSquare[4])
     int max = 0;
     MazeSquare* next = NULL;
     MazeSquare* allSquareTMP[4] = {allSquare[0], allSquare[1], allSquare[2], allSquare[3]};
-    for (int i = 1; i < 4; i++)
+    for (int i = 1; i < 4; i+=2)
     {
         int count = 0;
         while (allSquare[i] != NULL)

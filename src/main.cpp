@@ -32,8 +32,7 @@ void loop() {
 //        struct timeval start_time;
         if (gladiator->state == Warrior::State::INIT)
         {
-            // gladiator->initMap();
-            setTarget(target, 0, 7);
+            setTarget(target, gladiator->getNearestSquare().i, gladiator->getNearestSquare().j);
             // init_target(target, gladiator);
             start_time = millis();
             //          gettimeofday(&start_time, NULL);
