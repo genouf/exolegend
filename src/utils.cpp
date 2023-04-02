@@ -72,6 +72,45 @@ void	update_target(Vect2 &target, Warrior *gladiator)
 	i++;
 }
 
+void	targetNextMiddleMap(Vect2 &target, Warrior *gladiator)
+{
+	MazeSquare current = gladiator->getNearestSquare();
+	MazeSquare* allSquare[4];
+	gladiator->get_square_rotater(current, allSquare);
+
+    MazeSquare* next = NULL;
+
+	next = gladiator->FindNextMoveToCenter(allSquare, &current, NULL, 0, 3);
+	if (next == NULL)
+	{
+		if (gladiator->getNearestSquare().i >= 0 && gladiator->getNearestSquare().i <= 5)
+		{
+			target.set_x(setPositionFromIndex(current.i + 1));
+			target.set_y(setPositionFromIndex(current.j));
+		}
+		else if (gladiator->getNearestSquare().i >= 8 && gladiator->getNearestSquare().i <= 13)
+		{
+			target.set_x(setPositionFromIndex(current.i - 1));
+			target.set_y(setPositionFromIndex(current.j));
+		}
+		else if (gladiator->getNearestSquare().j >= 0 && gladiator->getNearestSquare().j <= 5)
+		{
+			target.set_x(setPositionFromIndex(current.i));
+			target.set_y(setPositionFromIndex(current.j + 1));
+		}
+		else if (gladiator->getNearestSquare().j >= 8 && gladiator->getNearestSquare().j <= 13)
+		{
+			target.set_x(setPositionFromIndex(current.i));
+			target.set_y(setPositionFromIndex(current.j - 1));
+		}	
+	}
+	else
+	{
+		target.set_x(setPositionFromIndex(next->i));
+		target.set_y(setPositionFromIndex(next->j));
+	}
+}
+
 void targetCenterNearest(Vect2& target, Warrior *gladiator)
 {
 	target.set_x(setPositionFromIndex(gladiator->getNearestSquare().i));

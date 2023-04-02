@@ -26,6 +26,8 @@ public:
         KILL,
         RUN,
         GOINSIDE,
+        LOVE,
+        SETUP,
     };
 
     Warrior();
@@ -50,6 +52,7 @@ public:
     bool checkIfThereIsAJewel(MazeSquare *allSquare[4], MazeSquare *from, int depth);
     MazeSquare* getSmartMove(MazeSquare *allSquare[4], MazeSquare *from);
     MazeSquare* getJewelSquarePos(MazeSquare *allSquare[4], MazeSquare *from, int depth, int max_depth);
+    MazeSquare*	FindNextMoveToCenter(MazeSquare *allSquare[4], MazeSquare *current, MazeSquare *from, int depth, int max_depth);
 
 
 

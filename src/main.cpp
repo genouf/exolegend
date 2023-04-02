@@ -37,7 +37,7 @@ void loop() {
             // init_target(target, gladiator);
             start_time = millis();
             //          gettimeofday(&start_time, NULL);
-            gladiator->state = Warrior::State::SEARCH;
+            gladiator->state = Warrior::State::SETUP;
             gladiator->data0 = gladiator->robot->getData();
         }
         if (gladiator->state == Warrior::State::KILL || gladiator->checkRobots())
@@ -69,8 +69,12 @@ void loop() {
             update_target(target, gladiator);
             // gladiator->log("TargetReach: NewTarget: %f, %f", target.x(), target.y());
         }
-        else if (status && gladiator->state == Warrior::State::GOINSIDE)
+        else if (status && gladiator->state == Warrior::State::SETUP)
         {
+            targetNextMiddleMap(target, gladiator);
+            if (target.x() == 7 && target.y() == 7)
+                gladiator->state = Warrior::State::SEARCH;
+
             //do something else
         }
         //display gladiator->state

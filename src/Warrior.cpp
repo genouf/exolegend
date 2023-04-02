@@ -440,6 +440,34 @@ MazeSquare *Warrior::getJewelSquarePos(MazeSquare *allSquare[4], MazeSquare *fro
     return (0);
 }
 
+MazeSquare*	Warrior::FindNextMoveToCenter(MazeSquare *allSquare[4], MazeSquare *current, MazeSquare *from, int depth, int max_depth)
+{
+    if (current->i == 7 && current->j == 7)
+        return (current);
+    if (abs(from->i - 7) + abs(from->j - 7) < abs(current->i - 7) + abs(current->j - 7))
+        depth += 1;
+    else
+        depth -= 1;
+
+    if (depth > max_depth)
+        return (0);
+
+    MazeSquare *tmp[4];
+    MazeSquare *val;
+    for (int i = 0; i < 4; i++)
+    {
+        if (allSquare[i] == from || allSquare[i] == NULL)
+            continue ;
+        if (allSquare[i])
+        {
+            this->get_square_rotater(*allSquare[i], tmp);
+            val = this->FindNextMoveToCenter(tmp, allSquare[i], current, depth, max_depth);
+            if (val)
+                return (allSquare[i]);
+        }
+    }
+}
+
 MazeSquare *Warrior::getSmartMove(MazeSquare *allSquare[4], MazeSquare *from)
 {
     MazeSquare *next = NULL;
@@ -458,8 +486,9 @@ MazeSquare *Warrior::getSmartMove(MazeSquare *allSquare[4], MazeSquare *from)
 
 s_newpos Warrior::getNextSquare()
 {
-    Position pos = this->robot->getData().position;
-	MazeSquare current = this->maze->getSquare(setIndexFromPosition(pos.x), setIndexFromPosition(pos.y));
+    MazeSquare current = this->nearest;
+    // Position pos = this->robot->getData().position;
+	// MazeSquare current = this->maze->getSquare(setIndexFromPosition(pos.x), setIndexFromPosition(pos.y));
 	MazeSquare* allSquare[4];
 	this->get_square_rotater(current, allSquare);
 
